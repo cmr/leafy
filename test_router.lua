@@ -2,6 +2,8 @@ local router = require "router"
 
 local stub = function() return spy.new(function() end) end
 
+local called = 0
+
 local routing_table = {
 	[""] = stub(),
 	foo = setmetatable({
@@ -11,22 +13,22 @@ local routing_table = {
 		baz = {
 			quux = stub()
 		}
-	}
+	},
+	baz = "not a function!",
+	-- because a stub is a functable
+	quux = function() called = called + 1 end,
 }
 
 describe("callable", function()
 	it("returns true for functions", function()
 		assert.is_true(router.callable(function() end))
 	end)
-
 	it("returns true for tables with metaevent __call", function()
 		assert.is_true(router.callable(setmetatable({}, {__call = function() end})))
 	end)
-
 	it("returns true for stubs", function()
 		assert.is_true(router.callable(stub()))
 	end)
-
 	it("returns false for all other values", function()
 		local values = {1, 0, true, false, {}, "foo"}
 		for _, v in ipairs(values) do
@@ -53,9 +55,18 @@ describe("router", function()
 	it("resolves deep path segments", function()
 		route(routing_table, "/bar/baz/quux")()
 		assert.spy(routing_table.bar.baz.quux).called()
+		route(routing_table, "/quux")()
+		assert.equals(called, 1)
 	end)
 	it("hands off unmatched paths", function()
 		route(routing_table, "/foo/bar/baz")()
 		assert.spy(getmetatable(routing_table.foo).__index.baz).called()
+	end)
+	it("returns nil for non-function leafs", function()
+		assert.is_nil(route(routing_table, "/baz"))
+	end)
+	it("returns nil for nonexistent paths", function()
+		assert.is_nil(route(routing_table, "/nonexistent"))
+		assert.is_nil(route(routing_table, "/a/b/c/d/e/f"))
 	end)
 end)

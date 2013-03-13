@@ -37,13 +37,7 @@ function M.route(rtab, path)
 	local node = rtab
 	local spath = split(path)
 	for i, v in ipairs(spath) do
-		if node == nil then
-			return nil
-		end
-
-		if callable(node) and i == #spath then
-			return node
-		elseif type(node) == "table" then
+		if type(node) == "table" then
 			if rawget(node, v) then
 				node = node[v]
 			else
