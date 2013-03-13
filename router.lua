@@ -41,7 +41,6 @@ function M.route(rtab, path)
 			return nil
 		end
 
-    	print(i, v)
 		if callable(node) and i == #spath then
 			return node
 		elseif type(node) == "table" then
