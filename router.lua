@@ -1,9 +1,4 @@
 local lpeg = require "lpeg"
-local re = require "re"
-
-local utils = require 'pl.utils'
-
-local inspect = require 'inspect'
 
 local M = {}
 
@@ -30,9 +25,12 @@ local function callable(obj)
 end
 
 --[[
---	Receives a routing table and a path, and returns the function
---	corresponding to that path
---]]
+	Receives a routing table and a path, and returns the function
+	corresponding to that path.
+
+	If there were any leftover path segments, they are returned as well,
+	joined with a / character (including a preceeding one!)
+]]
 function M.route(rtab, path)
 	local node = rtab
 	local spath = split(path)
@@ -41,7 +39,7 @@ function M.route(rtab, path)
 			if rawget(node, v) then
 				node = node[v]
 			else
-				return node[v], table.concat(spath, '/', i)
+				return node[v], '/' .. table.concat(spath, '/', i + 1)
 			end
 		end
 	end
