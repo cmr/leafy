@@ -1,4 +1,4 @@
-local router = require "router"
+local router = require "leafy"
 
 local stub = function() return spy.new(function() end) end
 
