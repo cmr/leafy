@@ -1,5 +1,5 @@
 package = "leafy"
-version = "0.1-1"
+version = "scm"
 source = {
    url = "git://github.com/cmr/leafy.git"
 }
