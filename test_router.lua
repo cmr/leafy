@@ -61,7 +61,7 @@ describe("router", function()
 	it("hands off unmatched paths", function()
 		local c = {route(routing_table, "/foo/bar/baz")}
 		c[1]()
-		assert.same(c[2], "baz")
+		assert.same("/baz", c[2])
 		assert.spy(getmetatable(routing_table.foo).__index.bar).called()
 	end)
 	it("returns nil for non-function leafs", function()
