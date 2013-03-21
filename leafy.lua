@@ -23,6 +23,8 @@ local function callable(obj)
 		It doesn't perform as well, either. See bench_callable.lua. On this
 		hardware, it's 0.68s versus 0.72s. Not a decision maker, but that
 		coupled with readability seals the deal.
+
+		And, of course, luajit makes it irrelevant. Readability wins.
 	]]
 
 	if type(obj) == 'function' then
