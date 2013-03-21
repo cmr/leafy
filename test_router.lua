@@ -8,10 +8,15 @@ local routing_table = {
 	[""] = stub(),
 	foo = setmetatable({
 		[""] = stub(),
-	}, {__index = {bar=stub()}}),
+	}, {
+		__index = {
+			bar = stub(),
+		}
+	}),
 	bar = {
 		baz = {
-			quux = stub()
+			quux = stub(),
+			quux2 = stub(),
 		}
 	},
 	baz = "not a function!",
@@ -58,6 +63,14 @@ describe("router", function()
 		route(routing_table, "/quux")()
 		assert.equals(called, 1)
 	end)
+	it("also accepts a sequence as a path", function()
+		route(routing_table, {"bar", "baz", "quux"})()
+		assert.spy(routing_table.bar.baz.quux).called(2)
+		route(routing_table, {})()
+		assert.spy(routing_table[""]).called(2)
+		route(routing_table, {""})()
+		assert.spy(routing_table[""]).called(3)
+	end)
 	it("hands off unmatched paths", function()
 		local c = {route(routing_table, "/foo/bar/baz")}
 		c[1]()
@@ -70,5 +83,8 @@ describe("router", function()
 	it("returns nil for nonexistent paths", function()
 		assert.is_nil(route(routing_table, "/nonexistent"))
 		assert.is_nil(route(routing_table, "/a/b/c/d/e/f"))
+	end)
+	it("errors on non-string/table arguments", function()
+		assert.has_error(function() route(routing_table, 123) end)
 	end)
 end)

@@ -1,4 +1,4 @@
-local lpeg = require "lpeg"
+local lpeg = require 'lpeg'
 
 local M = {}
 
@@ -47,9 +47,22 @@ end
 
 function M.route(rtab, path)
 	local node = rtab
-	local spath = split(path)
+	local t = type(path)
+	local spath
+
+	if t == 'string' then
+		spath = split(path)
+	elseif t == 'table' then
+		if next(path) == nil then
+			path = {''}
+		end
+		spath = path
+	else
+		error('String or table must be passed as path (arg 2)')
+	end
+
 	for i, v in ipairs(spath) do
-		if type(node) == "table" then
+		if type(node) == 'table' then
 			if rawget(node, v) then
 				node = node[v]
 			else
