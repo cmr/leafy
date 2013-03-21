@@ -11,9 +11,21 @@ local function split(path)
 	return t
 end
 
+--- Test if obj is callable
 local function callable(obj)
-	local t = type(obj)
-	if t == 'function' then
+	--[[
+		An alternative implementation could be:
+
+		local mt = getmetatable(obj)
+		return type(obj) == 'function' or mt and mt.__call ~= nil
+
+		Which is more concise (but not more readable, I think).
+		It doesn't perform as well, either. See bench_callable.lua. On this
+		hardware, it's 0.68s versus 0.72s. Not a decision maker, but that
+		coupled with readability seals the deal.
+	]]
+
+	if type(obj) == 'function' then
 		return true
 	else
 		local mt = getmetatable(obj)
@@ -24,13 +36,13 @@ local function callable(obj)
 	return false
 end
 
---[[
-	Receives a routing table and a path, and returns the function
-	corresponding to that path.
+---
+-- Receives a routing table and a path, and returns the function
+-- corresponding to that path.
+--
+-- If there were any leftover path segments, they are returned as well,
+-- joined with a / character (including a preceeding one!)
 
-	If there were any leftover path segments, they are returned as well,
-	joined with a / character (including a preceeding one!)
-]]
 function M.route(rtab, path)
 	local node = rtab
 	local spath = split(path)
