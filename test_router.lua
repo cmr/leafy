@@ -4,7 +4,7 @@ local stub = function() return spy.new(function() end) end
 
 local called = 0
 
-local routing_table = {
+local routing_table = setmetatable({
 	[""] = stub(),
 	foo = setmetatable({
 		[""] = stub(),
@@ -22,7 +22,9 @@ local routing_table = {
 	baz = "not a function!",
 	-- because a stub is a functable
 	quux = function() called = called + 1 end,
-}
+}, {
+	__index = function() end,
+})
 
 describe("callable", function()
 	it("returns true for functions", function()
@@ -74,7 +76,7 @@ describe("router", function()
 	it("hands off unmatched paths", function()
 		local c = {route(routing_table, "/foo/bar/baz")}
 		c[1]()
-		assert.same("/baz", c[2])
+		assert.same({"baz"}, c[2])
 		assert.spy(getmetatable(routing_table.foo).__index.bar).called()
 	end)
 	it("returns nil for non-function leafs", function()

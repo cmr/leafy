@@ -66,7 +66,11 @@ function M.route(rtab, path)
 			if rawget(node, v) then
 				node = node[v]
 			else
-				return node[v], '/' .. table.concat(spath, '/', i + 1)
+				local remainder = {}
+				for j = i+1, #spath do
+					table.insert(remainder, spath[j])
+				end
+				return node[v], remainder
 			end
 		end
 	end
