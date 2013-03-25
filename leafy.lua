@@ -67,11 +67,24 @@ function M.route(rtab, path)
 				node = node[v]
 			else
 				local remainder = {}
-				for j = i+1, #spath do
+				for j = i, #spath do
 					table.insert(remainder, spath[j])
 				end
-				return node[v], remainder
+				local mt = getmetatable(node)
+				if mt then
+					local cont, result = mt.default(remainder)
+					if cont then
+						node = result
+					else
+						return result, remainder
+					end
+				else
+					-- there is no default handler, no result
+					return nil
+				end
 			end
+		else
+			break
 		end
 	end
 	-- if we get here, we have exhausted the tree, but have a node

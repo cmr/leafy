@@ -4,27 +4,32 @@ local stub = function() return spy.new(function() end) end
 
 local called = 0
 
-local routing_table = setmetatable({
+local barstub = stub()
+local stubtwo = stub()
+
+local routing_table = {
 	[""] = stub(),
 	foo = setmetatable({
 		[""] = stub(),
 	}, {
-		__index = {
-			bar = stub(),
-		}
+		default = function(path)
+			return true, {baz = barstub}
+		end
 	}),
 	bar = {
-		baz = {
+		baz = setmetatable({
 			quux = stub(),
 			quux2 = stub(),
-		}
+		}, {
+			default = function(path)
+				return false, stubtwo
+			end
+		})
 	},
 	baz = "not a function!",
 	-- because a stub is a functable
 	quux = function() called = called + 1 end,
-}, {
-	__index = function() end,
-})
+}
 
 describe("callable", function()
 	it("returns true for functions", function()
@@ -73,11 +78,16 @@ describe("router", function()
 		route(routing_table, {""})()
 		assert.spy(routing_table[""]).called(3)
 	end)
-	it("hands off unmatched paths", function()
-		local c = {route(routing_table, "/foo/bar/baz")}
-		c[1]()
-		assert.same({"baz"}, c[2])
-		assert.spy(getmetatable(routing_table.foo).__index.bar).called()
+	it("continues lookup through a default handler", function()
+		local c = route(routing_table, "/foo/bar/baz")
+		c()
+		assert.spy(barstub).called()
+	end)
+	it("returns function + unresolved path segments for some handlers", function()
+		   local func, remainder = route(routing_table, "/bar/baz/undef/extra")
+		   func()
+		   assert.spy(stubtwo).called()
+		   assert.same({"undef", "extra"}, remainder)
 	end)
 	it("returns nil for non-function leafs", function()
 		assert.is_nil(route(routing_table, "/baz"))
