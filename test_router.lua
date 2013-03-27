@@ -6,6 +6,7 @@ local called = 0
 
 local barstub = stub()
 local stubtwo = stub()
+local unimstub = stub()
 
 local routing_table = {
 	[""] = stub(),
@@ -29,6 +30,7 @@ local routing_table = {
 	baz = "not a function!",
 	-- because a stub is a functable
 	quux = function() called = called + 1 end,
+	unimaginative = setmetatable({}, {default = function() return false, unimstub end}),
 }
 
 describe("callable", function()
@@ -84,10 +86,15 @@ describe("router", function()
 		assert.spy(barstub).called()
 	end)
 	it("returns function + unresolved path segments for some handlers", function()
-		   local func, remainder = route(routing_table, "/bar/baz/undef/extra")
-		   func()
-		   assert.spy(stubtwo).called()
-		   assert.same({"undef", "extra"}, remainder)
+		local func, remainder = route(routing_table, "/bar/baz/undef/extra")
+		func()
+		assert.spy(stubtwo).called()
+		assert.same({"undef", "extra"}, remainder)
+	end)
+	it("calls the default handler when there aren't unresolved segments but no routes defined", function()
+		local func = route(routing_table, "/unimaginative")
+		func()
+		assert.spy(unimstub).called()
 	end)
 	it("returns nil for non-function leafs", function()
 		assert.is_nil(route(routing_table, "/baz"))

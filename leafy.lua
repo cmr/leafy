@@ -66,6 +66,7 @@ function M.route(rtab, path)
 			if rawget(node, v) then
 				node = node[v]
 			else
+				-- No nodes left in the table, call out to the metatable
 				local remainder = {}
 				for j = i, #spath do
 					table.insert(remainder, spath[j])
@@ -87,11 +88,18 @@ function M.route(rtab, path)
 			break
 		end
 	end
-	-- if we get here, we have exhausted the tree, but have a node
+	-- if we get here, we have exhausted the tree, but might have a node
 	if callable(node) then
 		return node
 	else
-		-- but that node is invalid :(
+		-- ok, we don't have a valid node. maybe there's a default?
+		local mt = getmetatable(node)
+		if mt and mt.default then
+			-- don't do lookup, there are no path elements left
+			local _, func = mt.default()
+			return func, {}
+		end
+		-- nope, no result at all
 		return nil
 	end
 end
