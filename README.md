@@ -27,7 +27,7 @@ default_baz_func would return either `true, table`, where table is used to
 continue lookup, or `false, callable`, in which case the callable and whatever
 unresolved path segments were left is returned.
 
-See test_busted.lua for a very thorough example.
+See test_router.lua for a very thorough example.
 
 Running the tests
 -----------------
