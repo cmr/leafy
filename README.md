@@ -29,6 +29,11 @@ unresolved path segments were left is returned.
 
 See test_busted.lua for a very thorough example.
 
+Running the tests
+-----------------
+
+The tests use [busted](olivinelabs.com/busted/). Run `busted test_router.lua`
+
 Contributing
 ------------
 
@@ -36,3 +41,6 @@ Issue reports are wonderful, as are pull requests with bug fixes. If you plan
 on adding any features, though, open an issue first. leafy is supposed to be
 minimal, and for now I don't see anything else it should do. Refinements of
 the existing functionality is fine though.
+
+All patches must have 100% test coverage to be accepted. I'll write the tests
+if you don't, but it will make me grumpy :wink:

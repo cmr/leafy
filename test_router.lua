@@ -1,3 +1,6 @@
+if jit then
+	jit.off() -- JIT kills coverage
+end
 local router = require "./leafy"
 
 local stub = function() return spy.new(function() end) end
