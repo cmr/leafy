@@ -32,7 +32,7 @@ See test_router.lua for a very thorough example.
 Running the tests
 -----------------
 
-The tests use [busted](olivinelabs.com/busted/). Run `busted test_router.lua`
+The tests use [busted](http://olivinelabs.com/busted/). Run `busted test_router.lua`
 
 Contributing
 ------------
