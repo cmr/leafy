@@ -14,10 +14,7 @@ t = {
 	bar = another_func,
 	baz = setmetatable({
 		bar = yet_another_func
-	}, {
-		__index = default_baz_func},
-		__call = bar_func }
-	)
+	}, { default = default_baz_func })
 }
 ```
 
@@ -25,9 +22,12 @@ t = {
 `another_func`, `route(t, '/baz')` will return the functable at `t[baz]`,
 `route(t, '/baz/bar')` will return `yet_another_func`.
 
-`route(t, '/baz/12')` will return two values, `default_baz_func` and `'/12'`.
-This is to allow a web framework to easily handle things such as '/baz/:id' or
-the such without dealing with the boring stuff.
+`route(t, '/baz/12')` will call `default_baz_func` with `{'12'}`.
+default_baz_func would return either `true, table`, where table is used to
+continue lookup, or `false, callable`, in which case the callable and whatever
+unresolved path segments were left is returned.
+
+See test_busted.lua for a very thorough example.
 
 Contributing
 ------------
