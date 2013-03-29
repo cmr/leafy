@@ -1,7 +1,8 @@
 package = "leafy"
-version = "scm-0"
+version = "0.3.0-0"
 source = {
-   url = "git://github.com/cmr/leafy.git"
+   url = "git://github.com/cmr/leafy.git",
+   tag = "v0.3.0",
 }
 description = {
    summary = 'Simple path-based ("URL") router',
