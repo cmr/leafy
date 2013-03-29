@@ -45,7 +45,7 @@ end
 -- If there were any leftover path segments, they are returned as well,
 -- joined with a / character (including a preceeding one!)
 
-function M.route(rtab, path)
+function M.route(rtab, path, extra)
 	local node = rtab
 	local t = type(path)
 	local spath
@@ -73,7 +73,7 @@ function M.route(rtab, path)
 				end
 				local mt = getmetatable(node)
 				if mt then
-					local cont, result = mt.default(remainder)
+					local cont, result = mt.default(remainder, extra)
 					if cont then
 						node = result
 					else
@@ -96,7 +96,7 @@ function M.route(rtab, path)
 		local mt = getmetatable(node)
 		if mt and mt.default then
 			-- don't do lookup, there are no path elements left
-			local _, func = mt.default()
+			local _, func = mt.default({}, extra)
 			return func, {}
 		end
 		-- nope, no result at all

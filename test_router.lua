@@ -34,6 +34,12 @@ local routing_table = {
 	-- because a stub is a functable
 	quux = function() called = called + 1 end,
 	unimaginative = setmetatable({}, {default = function() return false, unimstub end}),
+	extratest = setmetatable({}, {
+		default = function(path, extra)
+			assert.is_true(extra.foo)
+			extra.bar = "hello"
+		end
+	})
 }
 
 describe("callable", function()
@@ -108,5 +114,10 @@ describe("router", function()
 	end)
 	it("errors on non-string/table arguments", function()
 		assert.has_error(function() route(routing_table, 123) end)
+	end)
+	it("passes an extra table to the default handler", function()
+		local extra = {foo = true}
+		route(routing_table, "/extratest", extra)
+		assert.equals("hello", extra.bar)
 	end)
 end)
